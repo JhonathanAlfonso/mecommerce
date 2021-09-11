@@ -1,4 +1,6 @@
-package com.mposglobal.mecommerce.Dto;
+package com.mposglobal.mecommerce.dto;
+
+import com.mposglobal.mecommerce.model.User;
 
 public class UserDto {
 
@@ -6,13 +8,6 @@ public class UserDto {
     private String password;
     private String email;
     private String name;
-
-    public UserDto(String username, String password, String email, String name) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.name = name;
-    }
 
     public String getUsername() {
         return username;
@@ -44,5 +39,15 @@ public class UserDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public User getUserFromDto(){
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+        user.setName(name);
+
+        return user;
     }
 }
