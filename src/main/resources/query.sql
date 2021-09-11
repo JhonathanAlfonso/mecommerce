@@ -13,3 +13,6 @@ CREATE TABLE users_roles (
    role_id BIGINT NOT NULL,
    PRIMARY KEY (user_id, role_id)
 );
+
+INSERT INTO roles (name) VALUES ('ADMIN');
+INSERT INTO roles (name) VALUES ('USER');
