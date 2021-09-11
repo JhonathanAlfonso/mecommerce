@@ -3,6 +3,7 @@ package com.mposglobal.mecommerce.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -13,18 +14,24 @@ public class User {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @Column(length = 30, nullable = false)
     private String username;
 
-    @Column
+    @Column(nullable = false)
     @JsonIgnore
     private String password;
 
-    @Column
+    @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column
+    @Column(length = 50, nullable = false)
     private String name;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "disabled_at")
+    private LocalDateTime disabledAt;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "USER_ROLES",
@@ -81,5 +88,10 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
     }
 }
