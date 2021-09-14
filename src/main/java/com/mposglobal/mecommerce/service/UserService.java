@@ -4,9 +4,13 @@ import com.mposglobal.mecommerce.dto.UserDto;
 import com.mposglobal.mecommerce.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
+
     User save(UserDto user);
+
     List<User> findAll();
-    User findOne(String username);
+
+    Optional<User> findOne(String username);
 }

@@ -1,39 +1,59 @@
 package com.mposglobal.mecommerce.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mposglobal.mecommerce.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
 public class User {
 
+    public User() {
+    }
+
+    public User(
+            String username,
+            String password,
+            String email,
+            String name,
+            Role role
+    ) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.role = role;
+    }
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @Column(length = 30, unique = true, nullable = false)
     private String username;
 
-    @Column
+    @Column(nullable = false)
     @JsonIgnore
     private String password;
 
-    @Column
+    @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column
+    @Column(length = 50, nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "USER_ROLES",
-            joinColumns = {
-                    @JoinColumn(name = "USER_ID")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "ROLE_ID") })
-    private Set<Role> roles;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "disabled_at")
+    private LocalDateTime disabledAt;
+
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(referencedColumnName = "id", columnDefinition = "bigint default 2")
+    private Role role;
 
     public long getId() {
         return id;
@@ -75,11 +95,24 @@ public class User {
         this.name = name;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public LocalDateTime getDisabledAt() {
+        return disabledAt;
+    }
+
+    public void setDisabledAt(LocalDateTime disabledAt) {
+        this.disabledAt = disabledAt;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
     }
 }
