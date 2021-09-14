@@ -67,6 +67,8 @@ public class UserDto {
         return isAdmin;
     }
 
+    public Boolean getIsDisable() { return isDisable; }
+
     public User getUserFromDto() {
         User user = new User();
         user.setUsername(username);

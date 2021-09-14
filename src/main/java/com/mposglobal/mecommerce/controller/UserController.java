@@ -14,9 +14,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -32,12 +34,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value="/", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('Admin')")
+    @GetMapping(value="/")
     public List<User> getAllUser() {
         return userService.findAll();
     }
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    @PostMapping(value = "/authenticate")
     public ResponseEntity<?> generateToken(@RequestBody LoginUser loginUser) throws AuthenticationException {
 
         final Authentication authentication = authenticationManager.authenticate(
@@ -51,16 +54,22 @@ public class UserController {
         return ResponseEntity.ok(new AuthToken(token));
     }
 
-    @RequestMapping(value="/register", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('Admin')")
+    @PostMapping(value="/register")
     public User saveUser(@RequestBody UserDto user){
         return userService.save(user);
     }
 
-
     @PreAuthorize("hasRole('Admin')")
-    @RequestMapping(value="/adminping", method = RequestMethod.GET)
-    public String adminPing(){
-        return "Only Admins Can Read This";
-    }
+    @GetMapping("/{username}")
+    public User retrieveUser(@PathVariable String username) {
 
+        Optional<User> userToRetrieve = userService.findOne(username);
+
+        if (userToRetrieve.isEmpty()) {
+            throw new UsernameNotFoundException("User with the specified username not found");
+        }
+
+        return userToRetrieve.get();
+    }
 }
