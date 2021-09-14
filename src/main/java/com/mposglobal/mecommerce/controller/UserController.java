@@ -16,6 +16,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/users")
@@ -29,6 +31,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @RequestMapping(value="/", method = RequestMethod.POST)
+    public List<User> getAllUser() {
+        return userService.findAll();
+    }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> generateToken(@RequestBody LoginUser loginUser) throws AuthenticationException {
@@ -49,7 +56,8 @@ public class UserController {
         return userService.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+    @PreAuthorize("hasRole('Admin')")
     @RequestMapping(value="/adminping", method = RequestMethod.GET)
     public String adminPing(){
         return "Only Admins Can Read This";
